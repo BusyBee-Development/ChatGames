@@ -2,6 +2,7 @@ package dev.rarehyperion.chatgames.game;
 
 import dev.rarehyperion.chatgames.config.Config;
 import dev.rarehyperion.chatgames.util.MessageUtil;
+import dev.rarehyperion.chatgames.util.ShuffleBag;
 import net.kyori.adventure.text.Component;
 
 import java.util.ArrayList;
@@ -19,10 +20,10 @@ public final class GameConfig {
 
     private final String startMessage, winMessage, timeoutMessage;
 
-    private final List<String> words;
-    private final List<QuestionAnswer> questions;
-    private final List<ReactionVariant> reactionVariants;
-    private final List<MultipleChoiceQuestion> multipleChoiceQuestions;
+    private final ShuffleBag<String> wordBag;
+    private final ShuffleBag<QuestionAnswer> questionBag;
+    private final ShuffleBag<ReactionVariant> variantBag;
+    private final ShuffleBag<MultipleChoiceQuestion> choiceBag;
 
     public GameConfig(final String type, final Config configuration) {
         this.name = configuration.getString("name", "Unknown");
@@ -37,10 +38,35 @@ public final class GameConfig {
         this.winMessage = configuration.getString("messages.win", "<red>Failed to fetch message, report this to a server administrator.</red>");
         this.timeoutMessage = configuration.getString("messages.timeout", "<red>Failed to fetch message, report this to a server administrator.</red>");
 
-        this.words = configuration.getStringList("words");
-        this.questions = this.loadQuestions(configuration.getList("questions"));
-        this.reactionVariants = this.loadReactionVariants(configuration.getList("variants"));
-        this.multipleChoiceQuestions = this.loadMultipleChoiceQuestions(configuration.getConfigurationSection("questions"));
+        final List<String> words = configuration.getStringList("words");
+        final List<QuestionAnswer> questions = this.loadQuestions(configuration.getList("questions"));
+        final List<ReactionVariant> reactionVariants = this.loadReactionVariants(configuration.getList("variants"));
+        final List<MultipleChoiceQuestion> multipleChoiceQuestions = this.loadMultipleChoiceQuestions(configuration.getConfigurationSection("questions"));
+
+        this.wordBag       = words.isEmpty()                   ? null : new ShuffleBag<>(words);
+        this.questionBag   = questions.isEmpty()               ? null : new ShuffleBag<>(questions);
+        this.variantBag    = reactionVariants.isEmpty()        ? null : new ShuffleBag<>(reactionVariants);
+        this.choiceBag     = multipleChoiceQuestions.isEmpty() ? null : new ShuffleBag<>(multipleChoiceQuestions);
+    }
+
+    public String nextWord() {
+        if(this.wordBag == null) throw new IllegalStateException("No words configured in: " + this.name);
+        return this.wordBag.next();
+    }
+
+    public QuestionAnswer nextQuestion() {
+        if(this.questionBag == null) throw new IllegalStateException("No questions configured in: " + this.name);
+        return this.questionBag.next();
+    }
+
+    public ReactionVariant nextVariant() {
+        if(this.variantBag == null) throw new IllegalStateException("No variants configured in: " + this.name);
+        return this.variantBag.next();
+    }
+
+    public MultipleChoiceQuestion nextChoice() {
+        if(this.choiceBag == null) throw new IllegalStateException("No multiple-choice configured in: " + this.name);
+        return this.choiceBag.next();
     }
 
     private List<QuestionAnswer> loadQuestions(final List<?> list) {
@@ -143,22 +169,6 @@ public final class GameConfig {
 
     public List<String> getRewardCommands() {
         return this.rewardCommands;
-    }
-
-    public List<String> getWords() {
-        return this.words;
-    }
-
-    public List<QuestionAnswer> getQuestions() {
-        return this.questions;
-    }
-
-    public List<ReactionVariant> getReactionVariants() {
-        return this.reactionVariants;
-    }
-
-    public List<MultipleChoiceQuestion> getMultipleChoiceQuestions() {
-        return this.multipleChoiceQuestions;
     }
 
     public static final class QuestionAnswer {

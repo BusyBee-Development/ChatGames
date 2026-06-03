@@ -15,7 +15,7 @@ public class MathGame extends AbstractGame {
 
     public MathGame(final ChatGamesCore plugin, final GameConfig config) {
         super(plugin, config, GameType.MATH);
-        this.question = this.selectRandom(config.getQuestions());
+        this.question = this.config.nextQuestion();
     }
 
     @Override

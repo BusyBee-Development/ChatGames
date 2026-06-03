@@ -22,7 +22,7 @@ public class MultipleChoiceGame extends AbstractGame {
 
     public MultipleChoiceGame(final ChatGamesCore plugin, final GameConfig config) {
         super(plugin, config, GameType.TRIVIA);
-        this.question = this.selectRandom(config.getMultipleChoiceQuestions());
+        this.question = this.config.nextChoice();
         this.answerOptions = extractAnswerOptions(this.question.answers());
     }
 

@@ -8,6 +8,7 @@ import dev.rarehyperion.chatgames.util.MessageUtil;
 import net.kyori.adventure.text.Component;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class UnscrambleGame extends AbstractGame {
 
@@ -15,7 +16,7 @@ public class UnscrambleGame extends AbstractGame {
 
     public UnscrambleGame(final ChatGamesCore plugin, final GameConfig config) {
         super(plugin, config, GameType.TRIVIA);
-        this.question = this.getScramble(config.getWords());
+        this.question = this.buildScramble(this.config.nextWord());
     }
     
     @Override
@@ -38,18 +39,15 @@ public class UnscrambleGame extends AbstractGame {
         return Optional.of(this.question.answer());
     }
 
-    private GameConfig.QuestionAnswer getScramble(final List<String> options) {
-        final Random random = new Random();
-        final String answer = options.get(new Random().nextInt(options.size()));
-
+    private GameConfig.QuestionAnswer buildScramble(final String word) {
         final List<Character> characters = new ArrayList<>();
-        for(char character : answer.toCharArray()) characters.add(character);
-        Collections.shuffle(characters, random);
+        for (final char c : word.toCharArray()) characters.add(c);
+        Collections.shuffle(characters, ThreadLocalRandom.current());
 
         final StringBuilder scrambled = new StringBuilder(characters.size());
-        for(char character : characters) scrambled.append(character);
+        for (final char c : characters) scrambled.append(c);
 
-        return new GameConfig.QuestionAnswer(scrambled.toString(), answer);
+        return new GameConfig.QuestionAnswer(scrambled.toString(), word);
     }
 
 }
