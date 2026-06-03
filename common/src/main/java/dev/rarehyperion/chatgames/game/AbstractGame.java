@@ -6,9 +6,7 @@ import dev.rarehyperion.chatgames.util.MessageUtil;
 import dev.rarehyperion.chatgames.util.Templater;
 import net.kyori.adventure.text.Component;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public abstract class AbstractGame implements Game {
 
@@ -68,10 +66,6 @@ public abstract class AbstractGame implements Game {
 
     protected Component createStartMessage() {
         return this.config.getStartMessage(this.getQuestion());
-    }
-
-    protected <T> T selectRandom(final List<T> list) {
-        return list.get(new Random().nextInt(list.size()));
     }
 
 }

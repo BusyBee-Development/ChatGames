@@ -26,7 +26,7 @@ public class ReactionGame extends AbstractGame {
 
     public ReactionGame(final ChatGamesCore plugin, final GameConfig config) {
         super(plugin, config, GameType.TRIVIA);
-        this.variant = this.selectRandom(config.getReactionVariants());
+        this.variant = this.config.nextVariant();
         this.clickToken = UUID.randomUUID().toString();
     }
     

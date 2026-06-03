@@ -15,7 +15,7 @@ public class TriviaGame extends AbstractGame {
 
     public TriviaGame(final ChatGamesCore plugin, final GameConfig config) {
         super(plugin, config, GameType.TRIVIA);
-        this.question = this.selectRandom(config.getQuestions());
+        this.question = this.config.nextQuestion();
     }
 
     @Override
